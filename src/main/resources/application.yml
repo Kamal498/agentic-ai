@@ -54,7 +54,7 @@ spring:
         embedding-dimension: 384          # all-MiniLM-L6-v2 output dimension
         index-type: HNSW                  # Best accuracy/speed trade-off
         metric-type: COSINE               # Cosine similarity as specified
-        initialize-schema: true           # Auto-create collection + index on startup
+        initialize-schema: false          # Disable auto-initialization, use custom config
 
 # Application-level config
 app:
