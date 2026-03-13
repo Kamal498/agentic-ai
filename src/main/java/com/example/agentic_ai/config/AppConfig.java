@@ -68,8 +68,13 @@ public class AppConfig {
                         .withCollectionName(collectionName)
                         .build();
                 
-                if (milvusClient.hasCollection(hasCollectionParam).getData()) {
-                    log.info("Milvus collection '{}' already exists", collectionName);
+                if (Boolean.TRUE.equals(milvusClient.hasCollection(hasCollectionParam).getData())) {
+                    log.info("Milvus collection '{}' already exists, loading into memory", collectionName);
+                    LoadCollectionParam loadCollectionParam = LoadCollectionParam.newBuilder()
+                            .withCollectionName(collectionName)
+                            .build();
+                    milvusClient.loadCollection(loadCollectionParam);
+                    log.info("Loaded existing collection '{}' into memory", collectionName);
                     return;
                 }
 
