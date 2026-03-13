@@ -84,6 +84,17 @@ services:
               capabilities: [gpu]
     # Remove the deploy section above if no GPU available
 
+  # Attu: Milvus Web UI for visualization and management
+  attu:
+    container_name: milvus-attu
+    image: zilliz/attu:v2.3.10
+    ports:
+      - "3000:3000"
+    environment:
+      MILVUS_URL: milvus-standalone:19530
+    depends_on:
+      - milvus
+
 volumes:
   etcd_data:
     driver: local
