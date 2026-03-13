@@ -1,0 +1,84 @@
+spring:
+  application:
+    name: agentic-ai
+
+  # H2 In-Memory Database
+  datasource:
+    url: jdbc:h2:mem:orderdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=MYSQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  # H2 Web Console
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  # JPA / Hibernate
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    database-platform: org.hibernate.dialect.H2Dialect
+    defer-datasource-initialization: true
+
+  # SQL Seed Data
+  sql:
+    init:
+      mode: always
+
+  # Spring AI - Ollama (LLM + Embeddings via local Ollama server)
+  ai:
+    ollama:
+      base-url: http://localhost:11434
+      chat:
+        options:
+          model: llama3.2:3b
+          temperature: 0.7
+          num-ctx: 4096
+      embedding:
+        options:
+          model: all-minilm   # all-MiniLM-L6-v2 served via Ollama → 384-dim vectors
+
+    # Milvus Vector Store
+    vectorstore:
+      milvus:
+        client:
+          host: localhost
+          port: 19530
+          username: root
+          password: Milvus
+        database-name: default
+        collection-name: order_embeddings
+        embedding-dimension: 384          # all-MiniLM-L6-v2 output dimension
+        index-type: HNSW                  # Best accuracy/speed trade-off
+        metric-type: COSINE               # Cosine similarity as specified
+        initialize-schema: true           # Auto-create collection + index on startup
+
+# Application-level config
+app:
+  rag:
+    top-k: 5                              # Default number of similar documents to retrieve
+    similarity-threshold: 0.6            # Minimum cosine similarity score (0-1)
+    chat-system-prompt: |
+      You are an intelligent assistant for an order management system.
+      You have access to information about orders, inventory, and payments.
+      Use ONLY the provided context to answer questions accurately.
+      If information is not in the context, clearly state that you don't have that data.
+      Be concise and precise in your responses.
+
+  audit:
+    enabled: true
+
+# Server config
+server:
+  port: 8080
+  error:
+    include-message: always
+
+# Logging
+logging:
+  level:
+    com.example.agentic_ai: INFO
+    org.springframework.ai: DEBUG
